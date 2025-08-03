@@ -14,12 +14,22 @@ class StorageService extends GetxService {
 
   // User data methods
   void saveUserData(UserModel user) {
+    print('DEBUG Storage: Saving user data');
+    print('DEBUG Storage: completionCounts=${user.completionCounts}');
     _box.write(AppConstants.userStorageKey, user.toJson());
+    print('DEBUG Storage: User data saved to storage');
   }
 
   UserModel? getUserData() {
     final data = _box.read(AppConstants.userStorageKey);
-    return data != null ? UserModel.fromJson(data) : null;
+    final user = data != null ? UserModel.fromJson(data) : null;
+    if (user != null) {
+      print('DEBUG Storage: Retrieved user data');
+      print('DEBUG Storage: completionCounts=${user.completionCounts}');
+    } else {
+      print('DEBUG Storage: No user data found');
+    }
+    return user;
   }
 
   void clearUserData() {

@@ -15,6 +15,11 @@ class WelcomeController extends GetxController {
   void onInit() {
     super.onInit();
     nameController.addListener(_validateName);
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
     _checkExistingUser();
   }
 
@@ -49,6 +54,7 @@ class WelcomeController extends GetxController {
         requiredExp: 100,
         characterType: 'warrior',
         completedBooks: {},
+        completionCounts: {},
         lastPlayed: DateTime.now(),
       );
 

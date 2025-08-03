@@ -4,6 +4,7 @@ import '../../../core/utils/storage_service.dart';
 import '../../../core/values/app_constants.dart';
 import '../../../data/models/book_model.dart';
 import '../../../modules/home/controllers/home_controller.dart';
+import '../../../modules/game_menu/controllers/game_menu_controller.dart';
 
 class SentenceGameController extends GetxController {
   final StorageService _storageService = Get.find<StorageService>();
@@ -89,14 +90,21 @@ class SentenceGameController extends GetxController {
       // Update completed games
       final bookKey = currentBook.value!.bookNum.toString();
       final completedBooks = Map<String, Map<String, bool>>.from(user.completedBooks);
+      final completionCounts = Map<String, Map<String, int>>.from(user.completionCounts);
       
       if (!completedBooks.containsKey(bookKey)) {
         completedBooks[bookKey] = {};
       }
+      if (!completionCounts.containsKey(bookKey)) {
+        completionCounts[bookKey] = {};
+      }
+      
       completedBooks[bookKey]!['sentenceGame'] = true;
+      completionCounts[bookKey]!['sentenceGame'] = (completionCounts[bookKey]!['sentenceGame'] ?? 0) + 1;
       
       final updatedUser = user.copyWith(
         completedBooks: completedBooks,
+        completionCounts: completionCounts,
         lastPlayed: DateTime.now(),
       );
       
@@ -105,6 +113,21 @@ class SentenceGameController extends GetxController {
       // Add experience points
       final homeController = Get.find<HomeController>();
       homeController.updateUserExp(AppConstants.sentenceGameExp * sentences.length);
+      
+      // Update game menu completion counts
+      try {
+        final gameMenuController = Get.find<GameMenuController>();
+        gameMenuController.refreshCompletionCounts();
+      } catch (e) {
+        // GameMenuController might not be available
+      }
+      
+      // Update home controller to refresh book cards
+      try {
+        homeController.update();
+      } catch (e) {
+        // HomeController might not be available
+      }
       
       // Show completion dialog
       Get.dialog(

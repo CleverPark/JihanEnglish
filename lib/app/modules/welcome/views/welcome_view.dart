@@ -13,13 +13,16 @@ class WelcomeView extends GetView<WelcomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: EdgeInsets.all(AppSpacing.lg),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(height: AppSpacing.xl),
                 // App Title
                 Text(
                   'English Hero',
@@ -122,6 +125,8 @@ class WelcomeView extends GetView<WelcomeController> {
                           ),
                   ),
                 )).animate().fadeIn(delay: 1200.ms, duration: 600.ms),
+                
+                SizedBox(height: AppSpacing.xl),
               ],
             ),
           ),

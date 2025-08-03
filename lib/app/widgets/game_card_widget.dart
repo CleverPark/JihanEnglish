@@ -11,6 +11,7 @@ class GameCardWidget extends StatelessWidget {
   final int exp;
   final Color color;
   final VoidCallback onTap;
+  final int? completionCount;
 
   const GameCardWidget({
     super.key,
@@ -20,6 +21,7 @@ class GameCardWidget extends StatelessWidget {
     required this.exp,
     required this.color,
     required this.onTap,
+    this.completionCount,
   });
 
   @override
@@ -73,32 +75,48 @@ class GameCardWidget extends StatelessWidget {
                 ],
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
-              ),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.star,
-                    size: 16.sp,
-                    color: color,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.xs,
                   ),
-                  SizedBox(width: 4.w),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.star,
+                        size: 16.sp,
+                        color: color,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        '+$exp EXP',
+                        style: AppTextStyles.body2.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (completionCount != null) ...[
+                  SizedBox(height: 4.h),
                   Text(
-                    '+$exp EXP',
+                    '${completionCount!}회 완료',
                     style: AppTextStyles.body2.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                      fontSize: 12.sp,
                     ),
                   ),
                 ],
-              ),
+              ],
             ),
           ],
         ),

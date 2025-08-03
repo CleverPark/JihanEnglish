@@ -60,46 +60,61 @@ class GameMenuView extends GetView<GameMenuController> {
   }
 
   Widget _buildGameOptions() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        GameCardWidget(
-          icon: Icons.abc,
-          title: '게임 1',
-          subtitle: '단어 읽기',
-          exp: AppConstants.wordGameExp,
-          color: AppColors.primary,
-          onTap: controller.navigateToWordGame,
-        ).animate()
-          .fadeIn(delay: 300.ms)
-          .slideX(begin: -0.2),
-        
-        SizedBox(height: AppSpacing.lg),
-        
-        GameCardWidget(
-          icon: Icons.text_fields,
-          title: '게임 2',
-          subtitle: '문장 읽기',
-          exp: AppConstants.sentenceGameExp,
-          color: AppColors.secondary,
-          onTap: controller.navigateToSentenceGame,
-        ).animate()
-          .fadeIn(delay: 500.ms)
-          .slideX(begin: -0.2),
-        
-        SizedBox(height: AppSpacing.lg),
-        
-        GameCardWidget(
-          icon: Icons.shuffle,
-          title: '게임 3',
-          subtitle: '문장 순서 맞추기',
-          exp: AppConstants.orderGameExp,
-          color: AppColors.success,
-          onTap: controller.navigateToOrderGame,
-        ).animate()
-          .fadeIn(delay: 700.ms)
-          .slideX(begin: -0.2),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: AppSpacing.xl),
+          
+          GetBuilder<GameMenuController>(
+            builder: (controller) => GameCardWidget(
+              icon: Icons.abc,
+              title: '게임 1',
+              subtitle: '단어 읽기',
+              exp: AppConstants.wordGameExp,
+              color: AppColors.primary,
+              onTap: controller.navigateToWordGame,
+              completionCount: controller.getCompletionCount('wordGame'),
+            ),
+          ).animate()
+            .fadeIn(delay: 300.ms)
+            .slideX(begin: -0.2),
+          
+          SizedBox(height: AppSpacing.lg),
+          
+          GetBuilder<GameMenuController>(
+            builder: (controller) => GameCardWidget(
+              icon: Icons.text_fields,
+              title: '게임 2',
+              subtitle: '문장 읽기',
+              exp: AppConstants.sentenceGameExp,
+              color: AppColors.secondary,
+              onTap: controller.navigateToSentenceGame,
+              completionCount: controller.getCompletionCount('sentenceGame'),
+            ),
+          ).animate()
+            .fadeIn(delay: 500.ms)
+            .slideX(begin: -0.2),
+          
+          SizedBox(height: AppSpacing.lg),
+          
+          GetBuilder<GameMenuController>(
+            builder: (controller) => GameCardWidget(
+              icon: Icons.shuffle,
+              title: '게임 3',
+              subtitle: '문장 순서 맞추기',
+              exp: AppConstants.orderGameExp,
+              color: AppColors.success,
+              onTap: controller.navigateToOrderGame,
+              completionCount: controller.getCompletionCount('orderGame'),
+            ),
+          ).animate()
+            .fadeIn(delay: 700.ms)
+            .slideX(begin: -0.2),
+          
+          SizedBox(height: AppSpacing.xl),
+        ],
+      ),
     );
   }
 }

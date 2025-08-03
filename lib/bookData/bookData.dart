@@ -54,5 +54,5 @@ const bookData = [
       ["no", "me", "bike"]
     ],
     "Sentences": ["Look at me, Mum.", "Look at me on my bike."]
-  }
+  },
 ];

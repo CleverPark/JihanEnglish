@@ -4,12 +4,25 @@ import '../../../core/utils/storage_service.dart';
 import '../../../core/values/app_constants.dart';
 import '../../../data/models/book_model.dart';
 import '../../../modules/home/controllers/home_controller.dart';
+import '../../../modules/game_menu/controllers/game_menu_controller.dart';
+
+class SentenceItem {
+  final String sentence;
+  final int originalIndex;
+  final String id;
+
+  SentenceItem({
+    required this.sentence,
+    required this.originalIndex,
+    required this.id,
+  });
+}
 
 class OrderGameController extends GetxController {
   final StorageService _storageService = Get.find<StorageService>();
   
   final Rx<BookModel?> currentBook = Rx<BookModel?>(null);
-  final RxList<String> shuffledSentences = <String>[].obs;
+  final RxList<SentenceItem> shuffledSentences = <SentenceItem>[].obs;
   final RxList<String> originalSentences = <String>[].obs;
   final RxBool isCompleted = false.obs;
   final RxBool isCheckingAnswer = false.obs;
@@ -26,8 +39,21 @@ class OrderGameController extends GetxController {
 
   void loadSentences() {
     if (currentBook.value != null) {
-      originalSentences.value = List.from(currentBook.value!.sentences);
-      shuffledSentences.value = List.from(currentBook.value!.sentences);
+      // Remove duplicate sentences
+      final uniqueSentences = currentBook.value!.sentences.toSet().toList();
+      originalSentences.value = List.from(uniqueSentences);
+      
+      // Create SentenceItem objects with unique IDs
+      final sentenceItems = <SentenceItem>[];
+      for (int i = 0; i < uniqueSentences.length; i++) {
+        sentenceItems.add(SentenceItem(
+          sentence: uniqueSentences[i],
+          originalIndex: i,
+          id: 'sentence_$i',
+        ));
+      }
+      
+      shuffledSentences.value = List.from(sentenceItems);
       shuffledSentences.shuffle();
     }
   }
@@ -40,6 +66,20 @@ class OrderGameController extends GetxController {
     shuffledSentences.insert(newIndex, item);
   }
 
+  void moveSentenceUp(int index) {
+    if (index > 0) {
+      final item = shuffledSentences.removeAt(index);
+      shuffledSentences.insert(index - 1, item);
+    }
+  }
+
+  void moveSentenceDown(int index) {
+    if (index < shuffledSentences.length - 1) {
+      final item = shuffledSentences.removeAt(index);
+      shuffledSentences.insert(index + 1, item);
+    }
+  }
+
   void checkAnswer() {
     if (isCheckingAnswer.value || isCompleted.value) return;
     
@@ -47,7 +87,7 @@ class OrderGameController extends GetxController {
     
     bool isCorrect = true;
     for (int i = 0; i < shuffledSentences.length; i++) {
-      if (shuffledSentences[i] != originalSentences[i]) {
+      if (shuffledSentences[i].originalIndex != i) {
         isCorrect = false;
         break;
       }
@@ -88,14 +128,21 @@ class OrderGameController extends GetxController {
       // Update completed games
       final bookKey = currentBook.value!.bookNum.toString();
       final completedBooks = Map<String, Map<String, bool>>.from(user.completedBooks);
+      final completionCounts = Map<String, Map<String, int>>.from(user.completionCounts);
       
       if (!completedBooks.containsKey(bookKey)) {
         completedBooks[bookKey] = {};
       }
+      if (!completionCounts.containsKey(bookKey)) {
+        completionCounts[bookKey] = {};
+      }
+      
       completedBooks[bookKey]!['orderGame'] = true;
+      completionCounts[bookKey]!['orderGame'] = (completionCounts[bookKey]!['orderGame'] ?? 0) + 1;
       
       final updatedUser = user.copyWith(
         completedBooks: completedBooks,
+        completionCounts: completionCounts,
         lastPlayed: DateTime.now(),
       );
       
@@ -104,6 +151,21 @@ class OrderGameController extends GetxController {
       // Add experience points
       final homeController = Get.find<HomeController>();
       homeController.updateUserExp(AppConstants.orderGameExp);
+      
+      // Update game menu completion counts
+      try {
+        final gameMenuController = Get.find<GameMenuController>();
+        gameMenuController.refreshCompletionCounts();
+      } catch (e) {
+        // GameMenuController might not be available
+      }
+      
+      // Update home controller to refresh book cards
+      try {
+        homeController.update();
+      } catch (e) {
+        // HomeController might not be available
+      }
       
       // Show completion dialog
       Get.dialog(

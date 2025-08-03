@@ -44,16 +44,37 @@ class HomeController extends GetxController {
     );
   }
 
+  Map<String, int>? getBookCompletionCounts(int bookNum) {
+    if (user.value == null) return null;
+    
+    final bookKey = bookNum.toString();
+    return user.value!.completionCounts[bookKey];
+  }
+
+  void resetUserData() {
+    _storageService.clearUserData();
+    user.value = null;
+    currentCharacter.value = null;
+    levelProgress.value = 0.0;
+    
+    // Navigate back to welcome screen
+    Get.offAllNamed(Routes.WELCOME);
+  }
+
   void updateUserExp(int expGained) {
     if (user.value == null) return;
 
+    // Get the most recent user data to ensure we have the latest completionCounts
+    final latestUser = _storageService.getUserData();
+    if (latestUser == null) return;
+
     final result = LevelSystem.processExp(
-      user.value!.level,
-      user.value!.currentExp,
+      latestUser.level,
+      latestUser.currentExp,
       expGained,
     );
 
-    final updatedUser = user.value!.copyWith(
+    final updatedUser = latestUser.copyWith(
       level: result.newLevel,
       currentExp: result.currentExp,
       requiredExp: result.requiredExp,

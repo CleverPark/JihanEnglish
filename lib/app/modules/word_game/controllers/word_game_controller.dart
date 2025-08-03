@@ -5,6 +5,7 @@ import '../../../core/values/app_constants.dart';
 import '../../../data/models/book_model.dart';
 import '../../../data/models/user_model.dart';
 import '../../../modules/home/controllers/home_controller.dart';
+import '../../../modules/game_menu/controllers/game_menu_controller.dart';
 
 class WordGameController extends GetxController {
   final StorageService _storageService = Get.find<StorageService>();
@@ -90,22 +91,48 @@ class WordGameController extends GetxController {
       // Update completed games
       final bookKey = currentBook.value!.bookNum.toString();
       final completedBooks = Map<String, Map<String, bool>>.from(user.completedBooks);
+      final completionCounts = Map<String, Map<String, int>>.from(user.completionCounts);
       
       if (!completedBooks.containsKey(bookKey)) {
         completedBooks[bookKey] = {};
       }
+      if (!completionCounts.containsKey(bookKey)) {
+        completionCounts[bookKey] = {};
+      }
+      
       completedBooks[bookKey]!['wordGame'] = true;
+      completionCounts[bookKey]!['wordGame'] = (completionCounts[bookKey]!['wordGame'] ?? 0) + 1;
+      
+      print('DEBUG WordGame: bookKey=$bookKey, newCount=${completionCounts[bookKey]!['wordGame']}');
+      print('DEBUG WordGame: completionCounts=$completionCounts');
       
       final updatedUser = user.copyWith(
         completedBooks: completedBooks,
+        completionCounts: completionCounts,
         lastPlayed: DateTime.now(),
       );
       
       _storageService.saveUserData(updatedUser);
+      print('DEBUG WordGame: User data saved');
       
       // Add experience points
       final homeController = Get.find<HomeController>();
       homeController.updateUserExp(AppConstants.wordGameExp * words.length);
+      
+      // Update game menu completion counts
+      try {
+        final gameMenuController = Get.find<GameMenuController>();
+        gameMenuController.refreshCompletionCounts();
+      } catch (e) {
+        // GameMenuController might not be available
+      }
+      
+      // Update home controller to refresh book cards
+      try {
+        homeController.update();
+      } catch (e) {
+        // HomeController might not be available
+      }
       
       // Show completion dialog
       Get.dialog(

@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
       designSize: const Size(1024, 768), // Galaxy Tab 12.4 inch
       minTextAdapt: true,
       splitScreenMode: true,
+      useInheritedMediaQuery: true,
       builder: (context, child) {
         return GetMaterialApp(
           title: 'English Hero',

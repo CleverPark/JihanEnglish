@@ -5,6 +5,7 @@ class UserModel {
   final int requiredExp;
   final String characterType;
   final Map<String, Map<String, bool>> completedBooks;
+  final Map<String, Map<String, int>> completionCounts;
   final DateTime lastPlayed;
 
   UserModel({
@@ -14,6 +15,7 @@ class UserModel {
     required this.requiredExp,
     required this.characterType,
     required this.completedBooks,
+    required this.completionCounts,
     required this.lastPlayed,
   });
 
@@ -25,6 +27,7 @@ class UserModel {
       requiredExp: json['requiredExp'] ?? 100,
       characterType: json['characterType'] ?? 'warrior',
       completedBooks: _parseCompletedBooks(json['completedBooks']),
+      completionCounts: _parseCompletionCounts(json['completionCounts']),
       lastPlayed: DateTime.parse(json['lastPlayed'] ?? DateTime.now().toIso8601String()),
     );
   }
@@ -37,6 +40,7 @@ class UserModel {
       'requiredExp': requiredExp,
       'characterType': characterType,
       'completedBooks': completedBooks,
+      'completionCounts': completionCounts,
       'lastPlayed': lastPlayed.toIso8601String(),
     };
   }
@@ -57,6 +61,22 @@ class UserModel {
     return result;
   }
 
+  static Map<String, Map<String, int>> _parseCompletionCounts(dynamic data) {
+    if (data == null) return {};
+    
+    final Map<String, Map<String, int>> result = {};
+    
+    if (data is Map) {
+      data.forEach((key, value) {
+        if (value is Map) {
+          result[key.toString()] = Map<String, int>.from(value);
+        }
+      });
+    }
+    
+    return result;
+  }
+
   UserModel copyWith({
     String? userName,
     int? level,
@@ -64,6 +84,7 @@ class UserModel {
     int? requiredExp,
     String? characterType,
     Map<String, Map<String, bool>>? completedBooks,
+    Map<String, Map<String, int>>? completionCounts,
     DateTime? lastPlayed,
   }) {
     return UserModel(
@@ -73,6 +94,7 @@ class UserModel {
       requiredExp: requiredExp ?? this.requiredExp,
       characterType: characterType ?? this.characterType,
       completedBooks: completedBooks ?? this.completedBooks,
+      completionCounts: completionCounts ?? this.completionCounts,
       lastPlayed: lastPlayed ?? this.lastPlayed,
     );
   }
