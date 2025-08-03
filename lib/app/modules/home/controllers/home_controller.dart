@@ -44,6 +44,11 @@ class HomeController extends GetxController {
     
     print('DEBUG: Loaded ${books.length} books');
     print('DEBUG: Using ${storedBookData != null ? "stored" : "hardcoded"} data');
+    
+    // 로드된 모든 책의 정보 출력
+    for (var book in books) {
+      print('DEBUG: Book ${book.bookNum} - Title: ${book.title}');
+    }
   }
 
   void navigateToGameMenu(int bookNum) {
@@ -151,6 +156,8 @@ class HomeController extends GetxController {
         // Parse CSV data
         final csvData = const CsvToListConverter().convert(response.body);
         
+        print('DEBUG: CSV 데이터 행 수: ${csvData.length}');
+        
         // Group data by BookNum
         final Map<int, Map<String, dynamic>> bookGroups = {};
         
@@ -158,7 +165,7 @@ class HomeController extends GetxController {
           final row = csvData[i];
           if (row.length >= 4) {
             final bookNum = int.parse(row[0].toString());
-            final title = row[1].toString();
+            final title = row[1].toString().trim();
             final word = row[2].toString().trim();
             final sentence = row[3].toString().trim();
             
@@ -170,6 +177,14 @@ class HomeController extends GetxController {
                 'Words': <String>[],
                 'Sentences': <String>[],
               };
+              print('DEBUG: 새 책 추가 - BookNum: $bookNum, Title: $title');
+            } else {
+              // 기존 책의 제목이 비어있고 새로운 제목이 있으면 업데이트
+              final currentTitle = bookGroups[bookNum]!['Title'] as String;
+              if (currentTitle.isEmpty && title.isNotEmpty) {
+                bookGroups[bookNum]!['Title'] = title;
+                print('DEBUG: 책 제목 업데이트 - BookNum: $bookNum, Title: $title');
+              }
             }
             
             // Add word if not empty
@@ -187,6 +202,8 @@ class HomeController extends GetxController {
         // Convert to final format and group words
         final bookDataList = <Map<String, dynamic>>[];
         
+        print('DEBUG: 총 ${bookGroups.length}개의 책 그룹 발견');
+        
         for (final bookData in bookGroups.values) {
           final words = bookData['Words'] as List<String>;
           final sentences = bookData['Sentences'] as List<String>;
@@ -200,13 +217,20 @@ class HomeController extends GetxController {
             wordGroups.add(words.sublist(i, endIndex));
           }
           
-          bookDataList.add({
+          final bookEntry = {
             'BookNum': bookData['BookNum'],
             'Title': bookData['Title'],
             'Words': wordGroups,
             'Sentences': sentences,
-          });
+          };
+          
+          print('DEBUG: 책 데이터 생성 - BookNum: ${bookEntry['BookNum']}, Title: ${bookEntry['Title']}, Words: ${wordGroups.length} groups, Sentences: ${sentences.length}');
+          
+          bookDataList.add(bookEntry);
         }
+        
+        // BookNum 순서로 정렬
+        bookDataList.sort((a, b) => (a['BookNum'] as int).compareTo(b['BookNum'] as int));
         
         // Save to GetStorage instead of file
         _storageService.saveBookData(bookDataList);

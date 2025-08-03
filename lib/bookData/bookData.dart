@@ -55,4 +55,64 @@ const bookData = [
     ],
     "Sentences": ["Look at me, Mum.", "Look at me on my bike."]
   },
+  {
+    "BookNum": 5,
+    "Title": "The Lost Hat",
+    "Words": [
+      ["lost", "hat", "where", "is"],
+      ["under", "on", "in", "found"]
+    ],
+    "Sentences": [
+      "Where is my hat?",
+      "Is it under the bed?",
+      "Is it on the chair?",
+      "Is it in the box?",
+      "I found my hat!"
+    ]
+  },
+  {
+    "BookNum": 6,
+    "Title": "Colors Everywhere",
+    "Words": [
+      ["yellow", "green", "purple", "orange"],
+      ["color", "what", "this", "that"]
+    ],
+    "Sentences": [
+      "What color is this?",
+      "This is yellow.",
+      "What color is that?",
+      "That is green.",
+      "Colors are everywhere!"
+    ]
+  },
+  {
+    "BookNum": 7,
+    "Title": "My Pet Dog",
+    "Words": [
+      ["pet", "dog", "play", "run"],
+      ["jump", "sit", "good", "boy"]
+    ],
+    "Sentences": [
+      "This is my pet dog.",
+      "He can run fast.",
+      "He can jump high.",
+      "Sit! Good boy!",
+      "I love my pet dog."
+    ]
+  },
+  {
+    "BookNum": 8,
+    "Title": "At the Park",
+    "Words": [
+      ["park", "swing", "slide", "fun"],
+      ["play", "together", "happy", "smile"]
+    ],
+    "Sentences": [
+      "We go to the park.",
+      "I play on the swing.",
+      "You go down the slide.",
+      "We play together.",
+      "The park is fun!"
+    ]
+  }
 ];

@@ -28,19 +28,19 @@ class HomeView extends GetView<HomeController> {
       ),
       drawer: _buildDrawer(),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              children: [
-                // Top row with character and user info
-                _buildTopRow(),
-                SizedBox(height: AppSpacing.lg),
-                
-                // Books grid
-                _buildBooksGrid(),
-              ],
-            ),
+        child: Padding(
+          padding: EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            children: [
+              // Top row with character and user info
+              _buildTopRow(),
+              SizedBox(height: AppSpacing.lg),
+              
+              // Books grid with scroll
+              Expanded(
+                child: _buildBooksGrid(),
+              ),
+            ],
           ),
         ),
       ),
@@ -184,8 +184,8 @@ class HomeView extends GetView<HomeController> {
     return GetBuilder<HomeController>(
       builder: (controller) {
         return GridView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          // 스크롤 가능하도록 설정
+          physics: AlwaysScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             crossAxisSpacing: AppSpacing.xs,

@@ -29,11 +29,24 @@ class GameMenuController extends GetxController {
   
 
   void loadBook() {
-    final bookDataItem = bookData.firstWhere(
-      (book) => book['BookNum'] == bookNum.value,
-      orElse: () => bookData.first,
-    );
-    currentBook.value = BookModel.fromJson(bookDataItem);
+    // Try to get book from HomeController's loaded books first
+    try {
+      final homeController = Get.find<HomeController>();
+      final book = homeController.books.firstWhere(
+        (book) => book.bookNum == bookNum.value,
+        orElse: () => homeController.books.first,
+      );
+      currentBook.value = book;
+      print('DEBUG GameMenu: Loaded book ${book.bookNum} - ${book.title}');
+    } catch (e) {
+      // Fallback to hardcoded data if HomeController not available
+      final bookDataItem = bookData.firstWhere(
+        (book) => book['BookNum'] == bookNum.value,
+        orElse: () => bookData.first,
+      );
+      currentBook.value = BookModel.fromJson(bookDataItem);
+      print('DEBUG GameMenu: Fallback to hardcoded book data');
+    }
   }
 
   void navigateToWordGame() {
