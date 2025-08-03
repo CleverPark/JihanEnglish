@@ -36,6 +36,23 @@ class StorageService extends GetxService {
     _box.remove(AppConstants.userStorageKey);
   }
 
+  // Book data methods
+  void saveBookData(List<Map<String, dynamic>> bookData) {
+    _box.write(AppConstants.bookStorageKey, bookData);
+  }
+
+  List<Map<String, dynamic>>? getBookData() {
+    final data = _box.read(AppConstants.bookStorageKey);
+    if (data != null && data is List) {
+      return List<Map<String, dynamic>>.from(data);
+    }
+    return null;
+  }
+
+  void clearBookData() {
+    _box.remove(AppConstants.bookStorageKey);
+  }
+
   // First run check
   bool isFirstRun() {
     return _box.read(AppConstants.firstRunKey) ?? true;

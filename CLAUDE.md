@@ -3,112 +3,111 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-English Hero is a gamified English learning app for children, optimized for Galaxy Tab 12.4 inch. The app uses Flutter with GetX state management (planned, not yet implemented).
+English Hero is a fully implemented gamified English learning app for children, optimized for Galaxy Tab 12.4 inch (1024x768). The app uses Flutter with GetX state management and includes a complete level system with character evolution.
 
 ## Development Commands
 
-### Flutter Commands
+### Essential Commands
 ```bash
-# Run the app
+# Test the app in release mode (critical for UI/font consistency)
+flutter run --release
+
+# Standard development run
 flutter run
 
-# Run on specific device
-flutter run -d <device_id>
+# Clean and rebuild (when facing UI issues)
+flutter clean && flutter pub get && flutter run --release
 
-# Build APK
-flutter build apk
-
-# Build App Bundle
-flutter build appbundle
-
-# Analyze code
+# Analyze code for issues
 flutter analyze
 
-# Run tests
-flutter test
-
-# Clean build
-flutter clean
-```
-
-### Dependencies
-```bash
-# Get dependencies
-flutter pub get
-
-# Upgrade dependencies
-flutter pub upgrade
+# Build for production
+flutter build apk --release
 ```
 
 ## Architecture Overview
 
-### Current State
-The project is currently using Flutter's default boilerplate code. The planned architecture (from initialDev.md) follows GetX pattern with:
-- **Controllers**: Business logic and state management
-- **Views**: UI components
-- **Bindings**: Dependency injection
-- **Models**: Data structures
-- **Routes**: Navigation management
+### Current Implementation
+The app follows GetX MVC pattern with complete implementation:
 
-### Key Files
-- `/lib/main.dart`: Entry point (currently default Flutter counter app)
-- `/lib/bookData/bookData.dart`: Contains book content data structure
-- `/lib/assets/worriorImg/tempWorrior.png`: Character asset
-- `/initialDev.md`: Comprehensive development plan and specifications
+**Core Structure:**
+- **Controllers**: Handle business logic, state management, and data persistence
+- **Views**: UI screens with responsive design using ScreenUtil (1024x768 base)
+- **Bindings**: Dependency injection for each module
+- **Models**: UserModel (with completion tracking), BookModel, CharacterModel
+- **Storage**: GetStorage for persistent user data and game progress
 
-### Planned Structure (from initialDev.md)
+### Critical Files and Patterns
+
+**Main Configuration:**
+- `/lib/main.dart`: ScreenUtilInit with `useInheritedMediaQuery: true` for consistent UI rendering
+- `/lib/app/core/values/app_spacing.dart`: Responsive spacing using getter methods (not static)
+- `/lib/app/core/theme/app_text_styles.dart`: Google Fonts implementation with getter methods
+
+**Data Models:**
+- `/lib/app/data/models/user_model.dart`: Complete user state with `completionCounts` tracking
+- `/lib/bookData/bookData.dart`: Static book content data (4 books currently)
+
+**Game Flow:**
+1. **Welcome**: User registration with name input
+2. **Home**: Character display, level progress, book grid (4 columns), navigation drawer
+3. **Game Menu**: Shows 3 games with completion counts and EXP values  
+4. **Games**: Three types with different mechanics and EXP rewards
+
+### Level System Implementation
+- **Character Evolution**: 5 stages based on level ranges (견습 용사 → 전설의 영웅)
+- **EXP Calculation**: level × 100 required EXP per level
+- **Completion Tracking**: Per-book, per-game completion counts stored in UserModel
+- **Progress Persistence**: All data saved via GetStorage, persists across app restarts
+
+## Game Mechanics
+
+### Three Game Types
+1. **Word Game** (`/lib/app/modules/word_game/`): Read words aloud - 5 EXP per word
+2. **Sentence Game** (`/lib/app/modules/sentence_game/`): Read sentences aloud - 10 EXP per sentence
+3. **Order Game** (`/lib/app/modules/order_game/`): Arrange sentences in order - 30 EXP per completion
+
+### UI/UX Patterns
+- **Responsive Design**: All spacing and fonts use ScreenUtil (.w, .h, .sp extensions)
+- **SafeArea**: Applied to all screens to handle device notches/status bars
+- **Navigation**: GetX routing with parameter passing (bookNum for games)
+- **Error Handling**: Overflow prevention with SingleChildScrollView where needed
+
+## Critical Implementation Notes
+
+### UI Rendering Consistency
+**Problem**: UI and fonts render differently between debug and release modes
+**Solution**: 
+- Use Google Fonts instead of static font declarations
+- Convert static spacing values to getter methods for proper ScreenUtil integration
+- Add `useInheritedMediaQuery: true` to ScreenUtilInit
+
+### Data Persistence Architecture
+```dart
+// UserModel structure with completion tracking
+Map<String, Map<String, int>> completionCounts = {
+  "book_1": {"game1": 3, "game2": 1, "game3": 0},
+  "book_2": {"game1": 2, "game2": 2, "game3": 1}
+};
 ```
-lib/
-├── app/
-│   ├── core/
-│   │   ├── theme/        # Design system implementation
-│   │   ├── values/       # Constants and spacing
-│   │   └── utils/        # Level system, storage service
-│   ├── data/
-│   │   ├── models/       # Book, User, Character models
-│   │   └── providers/    # Data providers
-│   ├── modules/          # Feature modules (GetX pattern)
-│   │   ├── welcome/      # User registration
-│   │   ├── home/         # Main screen
-│   │   ├── game_menu/    # Game selection
-│   │   ├── word_game/    # Word reading game
-│   │   ├── sentence_game/# Sentence reading game
-│   │   └── order_game/   # Sentence ordering game
-│   ├── routes/           # Navigation
-│   └── widgets/          # Reusable components
-```
 
-## Game Features
-1. **Word Reading Game**: 5 EXP per word
-2. **Sentence Reading Game**: 10 EXP per sentence  
-3. **Sentence Ordering Game**: 30 EXP per completion
+### Navigation Drawer Features
+- Level guide showing character evolution stages
+- User statistics (total completions, current level/EXP)
+- Data reset with password protection (880119)
+- App information
 
-## Level System
-- Levels 1-100
-- Character evolution every 20 levels
-- Required EXP per level: level × 100
+## Book Content Management
+Books are stored in `/lib/bookData/bookData.dart` as static data. To add books:
+1. Add new book object to bookData array with BookNum, Title, Words, Sentences
+2. Update any hardcoded book count references
+3. Ensure UI scales properly for additional books (currently 4-column grid)
 
-## Design System Colors
-- Primary: `#5B9EF7` (Sky blue)
-- Secondary: `#FF8C42` (Warm orange)
-- Success: `#4CAF50` (Green)
-- Background: `#F5F7FB`, `#FFFFFF`
-- Text: `#2D3748`, `#718096`
-
-## Required Dependencies (Not Yet Added)
-The following dependencies need to be added to pubspec.yaml:
-```yaml
-get: ^4.6.6
-get_storage: ^2.1.1
-lottie: ^2.7.0
-flutter_animate: ^4.3.0
-flutter_screenutil: ^5.9.0
-google_fonts: ^6.1.0
-flutter_draggable_gridview: ^0.0.7
-```
-
-## Data Storage
-Local storage using GetStorage for:
-- User profile and progress
-- Game completion states
-- Level and experience points
+## Dependency Management
+All required dependencies are installed in pubspec.yaml:
+- `get: ^4.6.6` - State management
+- `get_storage: ^2.1.1` - Local storage  
+- `flutter_screenutil: ^5.9.3` - Responsive design
+- `google_fonts: ^6.2.1` - Font consistency
+- `flutter_animate: ^4.5.0` - Animations
+- `lottie: ^3.1.2` - Vector animations

@@ -263,7 +263,7 @@ class HomeView extends GetView<HomeController> {
                       title: '책 DB 업데이트',
                       onTap: () {
                         Get.back();
-                        // TODO: 책 DB 업데이트 기능
+                        controller.updateBookDatabase();
                       },
                     ),
                     _buildMenuItem(

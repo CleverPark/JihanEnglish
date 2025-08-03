@@ -2,7 +2,7 @@ name: english_hero
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.5.4
@@ -34,23 +34,27 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  
+
   # State management
   get: ^4.6.6
-  
+
   # Local storage
   get_storage: ^2.1.1
-  
+
   # Animations
   lottie: ^3.1.2
   flutter_animate: ^4.5.0
-  
+
   # UI components
   flutter_screenutil: ^5.9.3
   google_fonts: ^6.2.1
-  
+
   # Gesture handling
   flutter_draggable_gridview: ^0.0.7
+
+  # HTTP requests and CSV parsing
+  http: ^1.1.0
+  csv: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -68,7 +72,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

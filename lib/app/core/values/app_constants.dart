@@ -10,6 +10,7 @@ class AppConstants {
 
   // Storage keys
   static const String userStorageKey = 'user_data';
+  static const String bookStorageKey = 'book_data';
   static const String firstRunKey = 'first_run';
 
   // Animation durations
